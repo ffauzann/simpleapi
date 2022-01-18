@@ -17,22 +17,18 @@ func (r *Repository) CalcMerchantGross(ctx context.Context, req *request.Merchan
 			FROM DateRange
 			WHERE date < '%s'
 		)
-		SELECT dr.date, m.merchant_id, m.merchant_name, COALESCE(t.gross, 0) gross
+		SELECT dr.date, COALESCE(t.gross, 0) gross
 		FROM DateRange dr
-		LEFT JOIN (
-			SELECT id merchant_id, merchant_name
-			FROM Merchants
-			WHERE user_id = %d
-		) AS m ON merchant_id IS NOT NULL
 		LEFT JOIN (
 			SELECT merchant_id, SUM(bill_total) gross, LEFT(created_at, 10) date
 			FROM Transactions
+			WHERE merchant_id = %d
 			GROUP BY merchant_id, LEFT(created_at, 10)
-		) AS t ON t.merchant_id = m.merchant_id AND t.date = dr.date
-		ORDER BY date, merchant_id`,
+		) AS t ON t.date = dr.date
+		ORDER BY date`,
 		req.StartDate,
 		req.EndDate,
-		req.User.ID,
+		req.User.Merchant.ID,
 	)
 	limitOffset := fmt.Sprintf("LIMIT %d OFFSET %d", req.Pagination.Limit, req.Pagination.Offset)
 

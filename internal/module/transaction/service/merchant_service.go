@@ -22,8 +22,8 @@ func (s *Service) MerchantGross(ctx context.Context, req *request.MerchantGross)
 		res = append(res, response.MerchantGross{
 			Date: data[i].Date,
 			Merchant: response.Merchant{
-				ID:   data[i].MerchantID,
-				Name: data[i].MerchantName,
+				ID:   req.User.Merchant.ID,
+				Name: req.User.Merchant.Name,
 			},
 			Gross: data[i].Gross,
 		})

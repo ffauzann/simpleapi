@@ -8,8 +8,6 @@ type Merchant struct {
 }
 
 type MerchantGross struct {
-	Date         string
-	MerchantID   int
-	MerchantName string
-	Gross        int
+	Date  string
+	Gross int
 }

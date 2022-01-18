@@ -9,18 +9,17 @@ import (
 	"go.uber.org/zap"
 )
 
-// CountOutletByUserID nodoc. See: irepository.go.
-func (r *Repository) CountOutletByUserID(ctx context.Context, userID int) int {
+// CountOutletByMerchantID nodoc. See: irepository.go.
+func (r *Repository) CountOutletByMerchantID(ctx context.Context, merchantID int) int {
 	var count int64
 	query := fmt.Sprintf(
-		`SELECT o.id 
-		FROM Outlets o
-		RIGHT JOIN (
-			SELECT id
-			FROM Merchants
-			WHERE user_id = %d
-		) as m ON m.id = o.merchant_id`,
-		userID,
+		`SELECT
+			id
+		FROM
+			Outlets
+		WHERE
+			merchant_id = %d`,
+		merchantID,
 	)
 	r.DB.Raw(query).Count(&count)
 	return int(count)
@@ -34,28 +33,20 @@ func (r *Repository) CalcOutletGross(ctx context.Context, req *request.OutletGro
 			FROM DateRange
 			WHERE date < '%s'
 		)
-		SELECT dr.date, o.merchant_id, o.merchant_name, o.outlet_id, o.outlet_name, COALESCE(t.gross, 0) gross
+		SELECT dr.date, o.id outlet_id, o.outlet_name, COALESCE(t.gross, 0) gross
 		FROM DateRange dr
-		LEFT JOIN (
-			SELECT m.id merchant_id, m.merchant_name, o.id outlet_id, outlet_name
-			FROM Outlets o
-			LEFT JOIN (
-				SELECT id, merchant_name
-				FROM Merchants
-				WHERE user_id = %d
-			) AS m ON m.id = o.merchant_id
-		) AS o ON merchant_id IS NOT NULL
+		LEFT JOIN Outlets o ON o.merchant_id = %d
 		LEFT JOIN (
 			SELECT outlet_id, SUM(bill_total) gross, LEFT(created_at, 10) date
 			FROM Transactions
-			WHERE merchant_id IN (SELECT id FROM Merchants WHERE user_id = %d)
+			WHERE merchant_id = %d
 			GROUP BY outlet_id, LEFT(created_at, 10)
-		) AS t ON t.outlet_id = o.outlet_id AND t.date = dr.date
+		) AS t ON t.outlet_id = o.id AND t.date = dr.date
 		ORDER BY date, outlet_id`,
 		req.StartDate,
 		req.EndDate,
-		req.User.ID,
-		req.User.ID,
+		req.User.Merchant.ID,
+		req.User.Merchant.ID,
 	)
 	limitOffset := fmt.Sprintf("LIMIT %d OFFSET %d", req.Pagination.Limit, req.Pagination.Offset)
 

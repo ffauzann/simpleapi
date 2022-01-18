@@ -8,8 +8,8 @@ import (
 )
 
 type Repository interface {
-	// CountOutletByUserID counts total outlet(s) with given userID parameter.
-	CountOutletByUserID(ctx context.Context, userID int) int
+	// CountOutletByMerchantID counts total outlet(s) with given merchantID parameter.
+	CountOutletByMerchantID(ctx context.Context, merchantID int) int
 
 	// CalcMerchantGross calculates every merhant's gross profit daily and counts total data for pagination purpose.
 	CalcMerchantGross(ctx context.Context, req *request.MerchantGross) (data []entity.MerchantGross, total int, err error)

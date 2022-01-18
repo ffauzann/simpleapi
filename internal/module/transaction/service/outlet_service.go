@@ -13,7 +13,7 @@ import (
 func (s *Service) OutletGross(ctx context.Context, req *request.OutletGross) (res []response.OutletGross, err error) {
 	// Count total outlet that user/merchant has. if there is no outlet, throw an error.
 	// Otherwise, if the merchant are more than 1, increase limit and offset.
-	totalOutlet := s.Repository.CountOutletByUserID(ctx, req.User.ID)
+	totalOutlet := s.Repository.CountOutletByMerchantID(ctx, req.User.Merchant.ID)
 	if totalOutlet == 0 {
 		err = constant.ErrNoOutletFound
 		return
@@ -50,8 +50,8 @@ func (s *Service) OutletGross(ctx context.Context, req *request.OutletGross) (re
 
 		// Prepare merchant detail
 		merchant := response.MerchantWithOutlets{
-			ID:      data[i].MerchantID,
-			Name:    data[i].MerchantName,
+			ID:      req.User.Merchant.ID,
+			Name:    req.User.Merchant.Name,
 			Outlets: []response.OutletWithGross{outlet},
 		}
 
