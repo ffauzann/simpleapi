@@ -29,13 +29,15 @@ func JWT(secret string) echo.MiddlewareFunc {
 				return response.Error(c, err)
 			}
 
+			merchant := claims["merchant"].(map[string]interface{})
+
 			user := entity.JWTClaims{
 				ID:       int(claims["id"].(float64)),
 				Name:     claims["name"].(string),
 				UserName: claims["user_name"].(string),
 				Merchant: entity.MerchantClaims{
-					ID:   int(claims["merchant.id"].(float64)),
-					Name: claims["merchant.name"].(string),
+					ID:   int(merchant["id"].(float64)),
+					Name: merchant["name"].(string),
 				},
 			}
 
