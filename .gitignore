@@ -1,0 +1,5 @@
+docs/
+vendor/
+tmp/
+
+internal/config/config.yaml

@@ -1,0 +1,14 @@
+app:
+  host: "localhost"
+  port: 3000
+  debug: false
+  jwt:
+    secret: ")[z+X{VPZe]D/ZkWq/i@FHNK;;yZ--[=!mP6;]i.?[S&]K![bQkSnvC*mYdq&Ue?"
+database:
+  mysql:
+    protocol: "tcp"
+    host: "localhost"
+    port: 3306
+    username: "root"
+    password: "password"
+    dbname: "playground"
